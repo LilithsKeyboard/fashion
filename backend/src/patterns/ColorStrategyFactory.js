@@ -10,9 +10,9 @@ class ColorStrategyFactory {
         switch (tone) {
             case 'Warm':
                 return new WarmColorRecommendation();
-            case 'Cool':
+            case 'cold':
                 return new CoolColorRecommendation();
-            case 'Neutral':
+            case 'Neatural':
                 return new NeutralColorRecommendation();
             default:
                 throw new Error("Invalid tone");
