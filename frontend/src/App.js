@@ -1,92 +1,171 @@
-import React, { useState } from 'react';
+// StyleSelectionForm.js
+import React, { Component } from 'react';
 import axios from 'axios';
+import FormDataBuilder from './formDataBuilder';
+import SuggestionTemplate from './SuggestionTemplate'; // Importing the new class
 
-const UserSelectionForm = () => {
-    const [hairColor, setHairColor] = useState('');
-    const [eyeColor, setEyeColor] = useState('');
-    const [skinColor, setSkinColor] = useState('');
-    const [lipColor, setLipColor] = useState('');
-    const [style, setStyle] = useState('');
-    const [toneSuggestion, setToneSuggestion] = useState('');
-    const [styleSuggestion, setStyleSuggestion] = useState('');
+class StyleSelectionForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            formData: new FormDataBuilder().build(),
+            style: '',
+            styleSuggestion: '',
+            toneSuggestion: '',
+            loading: false,
+            error: '',
+            errors: {},
+        };
+    }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    handleInputChange = (e) => {
+        const { name, value } = e.target;
+        const builder = new FormDataBuilder()
+            .setEyeColor(this.state.formData.eye_color)
+            .setHairColor(this.state.formData.hair_color)
+            .setSkinColor(this.state.formData.skin_color)
+            .setLipColor(this.state.formData.lip_color);
+
+        if (name === 'eye_color') builder.setEyeColor(value);
+        if (name === 'hair_color') builder.setHairColor(value);
+        if (name === 'skin_color') builder.setSkinColor(value);
+        if (name === 'lip_color') builder.setLipColor(value);
+
+        this.setState({ formData: builder.build(), errors: { ...this.state.errors, [name]: '' } });
+    };
+
+    handleStyleChange = (e) => {
+        this.setState({ style: e.target.value });
+    };
+
+    validate = () => {
+        const newErrors = {};
+        Object.keys(this.state.formData).forEach((key) => {
+            if (!this.state.formData[key]) newErrors[key] = 'Bu alan boş bırakılamaz.';
+        });
+        this.setState({ errors: newErrors });
+        return Object.keys(newErrors).length === 0;
+    };
+
+    handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!this.validate()) return;
+
+        this.setState({ loading: true });
 
         try {
-            // Backend'e gönderim
-            const response = await axios.post('http://localhost:5000/api/color', {
-                hairColor,
-                eyeColor,
-                skinColor,
-                lipColor,
-            });
-            setToneSuggestion(response.data.tone);
+            const [styleResponse, colorResponse] = await Promise.all([
+                axios.get(`http://localhost:8080/style/${this.state.style}`),
+                axios.get(`http://localhost:8080/color/${this.state.formData.eye_color}/${this.state.formData.hair_color}/${this.state.formData.lip_color}/${this.state.formData.skin_color}`),
+            ]);
 
-            const styleResponse = await axios.post('http://localhost:5000/api/style', { style });
-            setStyleSuggestion(styleResponse.data.suggestion);
+            // Pass the suggestions to the SuggestionTemplate class
+            const suggestionTemplate = new SuggestionTemplate(
+                styleResponse.data.suggestions,
+                colorResponse.data.recommendations
+            );
+
+            this.setState({
+                styleSuggestion: styleResponse.data.suggestions,
+                toneSuggestion: colorResponse.data.recommendations,
+                formattedSuggestions: suggestionTemplate.formatSuggestions(), // Get the formatted message
+            });
         } catch (error) {
-            console.error('Error submitting form', error);
+            console.error('There was an error:', error);
+            this.setState({ error: 'Bir hata oluştu, lütfen tekrar deneyin.' });
+        } finally {
+            this.setState({ loading: false });
         }
     };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Saç Rengi:
-                <select value={hairColor} onChange={(e) => setHairColor(e.target.value)}>
-                    <option value="kızıl">Kızıl</option>
-                    <option value="kahve">Kahve</option>
-                    <option value="siyah">Siyah</option>
-                    <option value="sarı">Sarı</option>
-                </select>
-            </label>
+    render() {
+        return (
+            <div style={styles.container}>
+                <h1>Stil ve Renk Öneri Formu</h1>
+                <form onSubmit={this.handleSubmit} style={styles.form}>
+                    <label style={styles.label}>
+                        Stil:
+                        <select value={this.state.style} onChange={this.handleStyleChange} style={styles.input}>
+                            <option value="">Bir stil seçin</option>
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="party">Party</option>
+                            <option value="sporty">Sporty</option>
+                        </select>
+                        {this.state.errors.style && <p style={styles.error}>{this.state.errors.style}</p>}
+                    </label>
 
-            <label>
-                Göz Rengi:
-                <select value={eyeColor} onChange={(e) => setEyeColor(e.target.value)}>
-                    <option value="mavi">Mavi</option>
-                    <option value="kahve">Kahve</option>
-                    <option value="yeşil">Yeşil</option>
-                </select>
-            </label>
+                    <label style={styles.label}>
+                        Göz Rengi:
+                        <select name="eye_color" value={this.state.formData.eye_color} onChange={this.handleInputChange} style={styles.input}>
+                            <option value="">Bir renk seçin</option>
+                            <option value="blue">Mavi</option>
+                            <option value="green">Yeşil</option>
+                            <option value="brown">Kahverengi</option>
+                        </select>
+                        {this.state.errors.eye_color && <p style={styles.error}>{this.state.errors.eye_color}</p>}
+                    </label>
 
-            <label>
-                Ten Rengi:
-                <select value={skinColor} onChange={(e) => setSkinColor(e.target.value)}>
-                    <option value="açık">Açık</option>
-                    <option value="buğday">Buğday</option>
-                    <option value="esmer">Esmer</option>
-                </select>
-            </label>
+                    <label style={styles.label}>
+                        Saç Rengi:
+                        <select name="hair_color" value={this.state.formData.hair_color} onChange={this.handleInputChange} style={styles.input}>
+                            <option value="">Bir renk seçin</option>
+                            <option value="brown">Kahverengi</option>
+                            <option value="red">Kızıl</option>
+                            <option value="black">Siyah</option>
+                            <option value="blonde">Sarı</option>
+                        </select>
+                        {this.state.errors.hair_color && <p style={styles.error}>{this.state.errors.hair_color}</p>}
+                    </label>
 
-            <label>
-                Dudak Rengi:
-                <select value={lipColor} onChange={(e) => setLipColor(e.target.value)}>
-                    <option value="pembe">Pembe</option>
-                    <option value="nude">Nude</option>
-                    <option value="kırmızı">Kırmızı</option>
-                </select>
-            </label>
+                    <label style={styles.label}>
+                        Ten Rengi:
+                        <select name="skin_color" value={this.state.formData.skin_color} onChange={this.handleInputChange} style={styles.input}>
+                            <option value="">Bir ton seçin</option>
+                            <option value="light">Açık</option>
+                            <option value="wheat">Buğday</option>
+                            <option value="dark">Esmer</option>
+                        </select>
+                        {this.state.errors.skin_color && <p style={styles.error}>{this.state.errors.skin_color}</p>}
+                    </label>
 
-            <label>
-                Stil:
-                <select value={style} onChange={(e) => setStyle(e.target.value)}>
-                    <option value="casual">Casual</option>
-                    <option value="formal">Formal</option>
-                    <option value="party">Party</option>
-                    <option value="sporty">Sporty</option>
-                </select>
-            </label>
+                    <label style={styles.label}>
+                        Dudak Rengi:
+                        <select name="lip_color" value={this.state.formData.lip_color} onChange={this.handleInputChange} style={styles.input}>
+                            <option value="">Bir renk seçin</option>
+                            <option value="pink">Pembe</option>
+                            <option value="nude">Nude</option>
+                            <option value="red">Kırmızı</option>
+                        </select>
+                        {this.state.errors.lip_color && <p style={styles.error}>{this.state.errors.lip_color}</p>}
+                    </label>
 
-            <button type="submit">Gönder</button>
+                    <button type="submit" style={styles.button} disabled={this.state.loading}>
+                        {this.state.loading ? 'Yükleniyor...' : 'Gönder'}
+                    </button>
+                </form>
 
-            <div>
-                <p>Renk Önerisi: {toneSuggestion}</p>
-                <p>Stil Önerisi: {styleSuggestion}</p>
+                {this.state.error && <p style={styles.error}>{this.state.error}</p>}
+
+                {/* Render formatted suggestions */}
+                {this.state.formattedSuggestions && (
+                    <div>
+                        <p>{this.state.formattedSuggestions}</p>
+                    </div>
+                )}
             </div>
-        </form>
-    );
+        );
+    }
+}
+
+const styles = {
+    container: { padding: '20px', fontFamily: 'Arial' },
+    form: { display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '400px' },
+    label: { fontWeight: 'bold' },
+    input: { padding: '10px', fontSize: '14px', borderRadius: '5px', border: '1px solid #ccc' },
+    button: { padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' },
+    error: { color: 'red', fontSize: '12px' },
 };
 
-export default UserSelectionForm;
+export default StyleSelectionForm;
