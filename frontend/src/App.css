@@ -1,38 +1,107 @@
-.App {
-  text-align: center;
+/* Container style - centers the form on the page */
+.container {
+  padding: 10px;
+  font-family: Arial;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  background-color: #F0EDE1; /* Apply the cannoli-cream color as the background */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Box that holds the form */
+.selectionBox {
+  border: 2px solid #F1F0E2;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  background-color: #E4CDB8; /* cream-tan background */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Box for the suggestions section */
+.suggestionBox {
+  border: 2px solid #c69066;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  background-color: #C9B29A; /* safari color */
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Style for the form */
+.form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
 }
 
-.App-link {
-  color: #61dafb;
+/* Label style */
+.label {
+  font-weight: bold;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Input field style */
+.input {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #A18063;
+  background-color:#E4CDB8;
+}
+
+/* Button style */
+.button {
+  padding: 10px;
+  background-color:#A18063;
+  color: #E4CDB8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Error message style */
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+/* Additional colors */
+.cannoli-cream {
+  background-color: #F0EDE1; /* cannoli-cream */
+}
+
+.cream-tan {
+  background-color: #E4CDB8; /* cream-tan */
+}
+
+.safari {
+  background-color: #C9B29A; /* safari */
+}
+
+.sirocco {
+  background-color: #B39980; /* sirocco */
+}
+
+.mocha-mousse {
+  background-color: #A18063; /* mocha-mousse */
+}
+
+.chanterelle {
+  background-color: #875D42; /* chanterelle */
+}
+
+.baltic-amber {
+  background-color: #694733; /* baltic-amber */
+}
+
+.chocolate-martini {
+  background-color: #503529; /* chocolate-martini */
 }

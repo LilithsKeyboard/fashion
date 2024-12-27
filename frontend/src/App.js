@@ -1,8 +1,8 @@
-// StyleSelectionForm.js
 import React, { Component } from 'react';
 import axios from 'axios';
 import FormDataBuilder from './formDataBuilder';
 import SuggestionTemplate from './SuggestionTemplate'; // Importing the new class
+import './App.css'; // Importing the external CSS
 
 class StyleSelectionForm extends Component {
     constructor(props) {
@@ -15,6 +15,7 @@ class StyleSelectionForm extends Component {
             loading: false,
             error: '',
             errors: {},
+            formattedSuggestions: '',
         };
     }
 
@@ -81,76 +82,79 @@ class StyleSelectionForm extends Component {
 
     render() {
         return (
-            <div style={styles.container}>
+            <div className="container">
                 <h1>Stil ve Renk Öneri Formu</h1>
-                <form onSubmit={this.handleSubmit} style={styles.form}>
-                    <label style={styles.label}>
-                        Stil:
-                        <select value={this.state.style} onChange={this.handleStyleChange} style={styles.input}>
-                            <option value="">Bir stil seçin</option>
-                            <option value="casual">Casual</option>
-                            <option value="formal">Formal</option>
-                            <option value="party">Party</option>
-                            <option value="sporty">Sporty</option>
-                        </select>
-                        {this.state.errors.style && <p style={styles.error}>{this.state.errors.style}</p>}
-                    </label>
+                <div className="selectionBox"> {/* Added box for selections */}
+                    <form onSubmit={this.handleSubmit} className="form">
+                        <label className="label">
+                            Stil:
+                            <select value={this.state.style} onChange={this.handleStyleChange} className="input">
+                                <option value="">Bir stil seçin</option>
+                                <option value="casual">Casual</option>
+                                <option value="formal">Formal</option>
+                                <option value="party">Party</option>
+                                <option value="sporty">Sporty</option>
+                            </select>
+                            {this.state.errors.style && <p className="error">{this.state.errors.style}</p>}
+                        </label>
 
-                    <label style={styles.label}>
-                        Göz Rengi:
-                        <select name="eye_color" value={this.state.formData.eye_color} onChange={this.handleInputChange} style={styles.input}>
-                            <option value="">Bir renk seçin</option>
-                            <option value="blue">Mavi</option>
-                            <option value="green">Yeşil</option>
-                            <option value="brown">Kahverengi</option>
-                        </select>
-                        {this.state.errors.eye_color && <p style={styles.error}>{this.state.errors.eye_color}</p>}
-                    </label>
+                        <label className="label">
+                            Göz Rengi:
+                            <select name="eye_color" value={this.state.formData.eye_color} onChange={this.handleInputChange} className="input">
+                                <option value="">Bir renk seçin</option>
+                                <option value="blue">Mavi</option>
+                                <option value="green">Yeşil</option>
+                                <option value="brown">Kahverengi</option>
+                            </select>
+                            {this.state.errors.eye_color && <p className="error">{this.state.errors.eye_color}</p>}
+                        </label>
 
-                    <label style={styles.label}>
-                        Saç Rengi:
-                        <select name="hair_color" value={this.state.formData.hair_color} onChange={this.handleInputChange} style={styles.input}>
-                            <option value="">Bir renk seçin</option>
-                            <option value="brown">Kahverengi</option>
-                            <option value="red">Kızıl</option>
-                            <option value="black">Siyah</option>
-                            <option value="blonde">Sarı</option>
-                        </select>
-                        {this.state.errors.hair_color && <p style={styles.error}>{this.state.errors.hair_color}</p>}
-                    </label>
+                        <label className="label">
+                            Saç Rengi:
+                            <select name="hair_color" value={this.state.formData.hair_color} onChange={this.handleInputChange} className="input">
+                                <option value="">Bir renk seçin</option>
+                                <option value="brown">Kahverengi</option>
+                                <option value="red">Kızıl</option>
+                                <option value="black">Siyah</option>
+                                <option value="blonde">Sarı</option>
+                            </select>
+                            {this.state.errors.hair_color && <p className="error">{this.state.errors.hair_color}</p>}
+                        </label>
 
-                    <label style={styles.label}>
-                        Ten Rengi:
-                        <select name="skin_color" value={this.state.formData.skin_color} onChange={this.handleInputChange} style={styles.input}>
-                            <option value="">Bir ton seçin</option>
-                            <option value="light">Açık</option>
-                            <option value="wheat">Buğday</option>
-                            <option value="dark">Esmer</option>
-                        </select>
-                        {this.state.errors.skin_color && <p style={styles.error}>{this.state.errors.skin_color}</p>}
-                    </label>
+                        <label className="label">
+                            Ten Rengi:
+                            <select name="skin_color" value={this.state.formData.skin_color} onChange={this.handleInputChange} className="input">
+                                <option value="">Bir ton seçin</option>
+                                <option value="light">Açık</option>
+                                <option value="wheat">Buğday</option>
+                                <option value="dark">Esmer</option>
+                            </select>
+                            {this.state.errors.skin_color && <p className="error">{this.state.errors.skin_color}</p>}
+                        </label>
 
-                    <label style={styles.label}>
-                        Dudak Rengi:
-                        <select name="lip_color" value={this.state.formData.lip_color} onChange={this.handleInputChange} style={styles.input}>
-                            <option value="">Bir renk seçin</option>
-                            <option value="pink">Pembe</option>
-                            <option value="nude">Nude</option>
-                            <option value="red">Kırmızı</option>
-                        </select>
-                        {this.state.errors.lip_color && <p style={styles.error}>{this.state.errors.lip_color}</p>}
-                    </label>
+                        <label className="label">
+                            Dudak Rengi:
+                            <select name="lip_color" value={this.state.formData.lip_color} onChange={this.handleInputChange} className="input">
+                                <option value="">Bir renk seçin</option>
+                                <option value="pink">Pembe</option>
+                                <option value="nude">Nude</option>
+                                <option value="red">Kırmızı</option>
+                            </select>
+                            {this.state.errors.lip_color && <p className="error">{this.state.errors.lip_color}</p>}
+                        </label>
 
-                    <button type="submit" style={styles.button} disabled={this.state.loading}>
-                        {this.state.loading ? 'Yükleniyor...' : 'Gönder'}
-                    </button>
-                </form>
+                        <button type="submit" className="button" disabled={this.state.loading}>
+                            {this.state.loading ? 'Yükleniyor...' : 'Gönder'}
+                        </button>
+                    </form>
+                </div>
 
-                {this.state.error && <p style={styles.error}>{this.state.error}</p>}
+                {this.state.error && <p className="error">{this.state.error}</p>}
 
-                {/* Render formatted suggestions */}
+                {/* Render formatted suggestions in a separate box */}
                 {this.state.formattedSuggestions && (
-                    <div>
+                    <div className="suggestionBox"> {/* Added box for suggestions */}
+                        <h2>Öneriler</h2>
                         <p>{this.state.formattedSuggestions}</p>
                     </div>
                 )}
@@ -158,14 +162,5 @@ class StyleSelectionForm extends Component {
         );
     }
 }
-
-const styles = {
-    container: { padding: '20px', fontFamily: 'Arial' },
-    form: { display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '400px' },
-    label: { fontWeight: 'bold' },
-    input: { padding: '10px', fontSize: '14px', borderRadius: '5px', border: '1px solid #ccc' },
-    button: { padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' },
-    error: { color: 'red', fontSize: '12px' },
-};
 
 export default StyleSelectionForm;
